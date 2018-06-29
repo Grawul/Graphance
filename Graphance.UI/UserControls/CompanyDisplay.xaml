@@ -1,0 +1,129 @@
+﻿<UserControl x:Class="Graphance.UI.UserControls.CompanyDisplay"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:objects="clr-namespace:Graphance.Entities.Objects;assembly=Graphance.Entities"
+             xmlns:ct="clr-namespace:System.Windows.Controls.DataVisualization.Charting;assembly=System.Windows.Controls.DataVisualization.Toolkit"
+             xmlns:vt="clr-namespace:System.Windows.Controls.DataVisualization;assembly=System.Windows.Controls.DataVisualization.Toolkit"
+             xmlns:primitives="clr-namespace:System.Windows.Controls.DataVisualization.Charting.Primitives;assembly=System.Windows.Controls.DataVisualization.Toolkit"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" 
+             d:DesignWidth="900" 
+             MinHeight="150"
+             d:DataContext="{d:DesignInstance objects:Company}">
+
+    <UserControl.Resources>
+        <Style x:Key="CompanyHeader" TargetType="TextBlock">
+            <Setter Property="FontWeight" Value="DemiBold" />
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="Margin" Value="60,4,0,0"/>
+        </Style>
+
+        <Style x:Key="SmallerTitleStyle">
+            <Setter Property="Control.FontSize" Value="12" />
+            <Setter Property="Control.HorizontalAlignment" Value="Center" />
+        </Style>
+
+        <Style x:Key="DateTimeAxisLabelStyle" TargetType="ct:DateTimeAxisLabel">
+            <Setter Property="DaysIntervalStringFormat" Value="{}{0:dd MMM}" />
+            <Setter Property="MonthsIntervalStringFormat" Value="{}{0:MMM yyyy}" />
+            <Setter Property="YearsIntervalStringFormat" Value="{}{0:yyyy}" />
+        </Style>
+
+        <Style x:Key="ChartStyle" TargetType="ct:Chart">
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ct:Chart}">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="5">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <vt:Title Content="{TemplateBinding Title}" Style="{StaticResource SmallerTitleStyle}" />
+                                <primitives:EdgePanel Name="ChartArea" Style="{TemplateBinding ChartAreaStyle}" Grid.Row="1" Margin="0,3,15,0">
+                                    <Grid Panel.ZIndex="-1" Style="{TemplateBinding PlotAreaStyle}" />
+                                    <Border Panel.ZIndex="10" BorderBrush="#FF919191" BorderThickness="1" />
+                                </primitives:EdgePanel>
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Border BorderThickness="1"
+            BorderBrush="Black"
+            CornerRadius="10">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Row="0"
+                       Grid.Column="0"
+                       Grid.ColumnSpan="3"
+                       Text="{Binding Path=Name}"
+                       Style="{StaticResource CompanyHeader}">
+            </TextBlock>
+
+
+            <ct:Chart Grid.Row="1"
+                      Grid.Column="0"
+                      Style="{StaticResource ChartStyle}"
+                      Title="{Binding Path=Market.DateString}">
+                <ct:LineSeries ItemsSource="{Binding Path=LatestPrices}"
+                               DependentValuePath="Value"
+                               IndependentValuePath="DateTime">
+                    <ct:LineSeries.DataPointStyle>
+                        <Style TargetType="{x:Type ct:LineDataPoint}">
+                            <Setter Property="Background" Value="{Binding Path=LatestColor}" />
+                            <Setter Property="Opacity" Value="0" />
+                        </Style>
+                    </ct:LineSeries.DataPointStyle>
+                </ct:LineSeries>
+                <ct:Chart.Axes>
+                    <ct:DateTimeAxis Orientation="X"
+                                     AxisLabelStyle="{StaticResource DateTimeAxisLabelStyle}"
+                                     Minimum="{Binding Path=Market.OpeningDateTime}"
+                                     Maximum="{Binding Path=Market.ClosingDateTime}">
+                    </ct:DateTimeAxis>
+                </ct:Chart.Axes>
+            </ct:Chart>
+
+
+            <ct:Chart Grid.Row="1"
+                      Grid.Column="1"
+                      Style="{StaticResource ChartStyle}"
+                      Title="Historical Overview">
+                <ct:LineSeries ItemsSource="{Binding Path=HistoricalPrices}"
+                               DependentValuePath="Value"
+                               IndependentValuePath="DateTime">
+                    <ct:LineSeries.DataPointStyle>
+                        <Style TargetType="{x:Type ct:LineDataPoint}">
+                            <Setter Property="Background" Value="{Binding Path=HistoricalColor}" />
+                            <Setter Property="Opacity" Value="0" />
+                        </Style>
+                    </ct:LineSeries.DataPointStyle>
+                </ct:LineSeries>
+                <ct:Chart.Axes>
+                    <ct:DateTimeAxis Orientation="X"
+                                     AxisLabelStyle="{StaticResource DateTimeAxisLabelStyle}">
+                    </ct:DateTimeAxis>
+                </ct:Chart.Axes>
+            </ct:Chart>
+        </Grid>
+    </Border>
+</UserControl>
+
+
+
